@@ -12,3 +12,7 @@
 
 #include "philo.h"
 
+void    dinner_routine(void *arg)
+{
+    
+}
