@@ -28,7 +28,7 @@ typedef struct s_philo_data
     int                 number_of_times_each_philosopher_must_eat;
 }   t_philo_data;
 
-typedef struct philo_s
+typedef struct s_philo
 {
     t_philo_data        *data;
     pthread_t           philo;
@@ -36,6 +36,9 @@ typedef struct philo_s
     pthread_mutex_t     *right_fork;
     pthread_mutex_t     philo_fork;
     _Atomic long int    last_meal;
-}   philo_t;
+}   t_philo;
+
+t_philo_data    initializing_philo_data(char **argv)
+t_philo    initializing_philo(t_philo_data *data)
 
 #endif
