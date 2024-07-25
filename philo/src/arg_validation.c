@@ -1,25 +1,13 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo.c                                            :+:      :+:    :+:   */
+/*   arg_validation.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/23 16:30:24 by marvin            #+#    #+#             */
-/*   Updated: 2024/07/23 16:30:24 by marvin           ###   ########.fr       */
+/*   Created: 2024/07/25 11:57:42 by marvin            #+#    #+#             */
+/*   Updated: 2024/07/25 11:57:42 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-int main(int argc, char **argv)
-{
-    t_philo         *philo;
-
-    if (argc > 6 || argc < 5)
-        return (1);
-    philo = initializing_philo(argv);
-    //printf("%ld e %ld\n", philo->data->number_of_philosophers, philo->data->time_to_sleep);
-    (void)philo;
-    return (0);
-}

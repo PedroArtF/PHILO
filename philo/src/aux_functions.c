@@ -1,25 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo.c                                            :+:      :+:    :+:   */
+/*   aux_functions.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/23 16:30:24 by marvin            #+#    #+#             */
-/*   Updated: 2024/07/23 16:30:24 by marvin           ###   ########.fr       */
+/*   Created: 2024/07/24 20:58:33 by marvin            #+#    #+#             */
+/*   Updated: 2024/07/24 20:58:33 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include <philo.h>
 
-int main(int argc, char **argv)
+long int	ft_atoli(const char *nptr)
 {
-    t_philo         *philo;
+	long int	result;
 
-    if (argc > 6 || argc < 5)
-        return (1);
-    philo = initializing_philo(argv);
-    //printf("%ld e %ld\n", philo->data->number_of_philosophers, philo->data->time_to_sleep);
-    (void)philo;
-    return (0);
+	result = 0;
+	while ((*nptr >= '0') && (*nptr <= '9'))
+	{
+		result *= 10;
+		result += *nptr - '0';
+		nptr++;
+	}
+	return (result);
 }
