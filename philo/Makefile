@@ -36,7 +36,8 @@ HEADERS = $(addprefix $(INC)/, philo.h)
 
 # files mandatory #
 CFILES = philo.c
-CFILES += $(addprefix $(SRC)/, dinner_routine.c instantiation_of_structs.c start_simulation.c)
+CFILES += $(addprefix $(SRC)/, dinner_routine.c instantiation_of_structs.c start_simulation.c \
+				arg_validation.c aux_functions.c)
 
 VAL = valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --log-file=valgrind-out.txt
 VAL_TXT = valgrind-out.txt

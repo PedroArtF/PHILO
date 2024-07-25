@@ -16,10 +16,10 @@ int main(int argc, char **argv)
 {
     t_philo         *philo;
 
-    if (argc > 6 || argc < 5)
-        return (1);
+    if (args_validation(argc, argv))
+        return (EXIT_FAILURE);
     philo = initializing_philo(argv);
-    //printf("%ld e %ld\n", philo->data->number_of_philosophers, philo->data->time_to_sleep);
-    (void)philo;
-    return (0);
+    printf("%ld e %ld\n", philo->data->number_of_philosophers, philo->data->time_to_sleep);
+    //(void)philo;
+    return (EXIT_SUCCESS);
 }

@@ -38,8 +38,11 @@ t_philo    *initializing_philo(char **argv)
     int     i;
 
     i = 0;
-    data = initializing_philo_data(argv);
+    if (!(data = initializing_philo_data(argv)))
+        return (NULL);
     philo = malloc(sizeof(t_philo) * (data->number_of_philosophers + 1));
+    if (!philo)
+        return (NULL);
     memset(philo, '\0', (sizeof(philo) * (data->number_of_philosophers + 1)));
     while (i < data->number_of_philosophers)
     {

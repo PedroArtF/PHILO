@@ -33,3 +33,22 @@ int	ft_isdigit(char c)
 	return (FALSE);
 }
 
+void	ft_putstr_fd(const char *string, int fd)
+{
+	if (!string)
+		return ;
+	write(fd, string, ft_strlen(string));
+}
+
+int	ft_strlen(const char *string)
+{
+	int	counter;
+
+	counter = 0;
+	if (!string)
+		return (counter);
+	while (string[counter])
+		counter++;
+	return (counter);
+}
+

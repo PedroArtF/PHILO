@@ -42,12 +42,17 @@ typedef struct s_philo
     _Atomic long int    last_meal;
 }   t_philo;
 
+//arg validation
+int             args_validation(int argc, char **argv);
+
 //initializing functions
 t_philo_data    *initializing_philo_data(char **argv);
-t_philo    *initializing_philo(char **argv);
+t_philo         *initializing_philo(char **argv);
 
 //aux functions
-long int	ft_atoli(const char *nptr);
-int         ft_isdigit(char c);
+long int	    ft_atoli(const char *nptr);
+int             ft_isdigit(char c);
+void	        ft_putstr_fd(const char *string, int fd);
+int	            ft_strlen(const char *string);
 
 #endif
