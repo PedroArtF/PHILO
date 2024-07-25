@@ -20,6 +20,9 @@
 #include <string.h>
 #include <sys/time.h>
 
+# define TRUE 1
+# define FALSE 0
+
 typedef struct s_philo_data
 {
     _Atomic long int                  number_of_philosophers;
