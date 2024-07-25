@@ -48,5 +48,6 @@ t_philo    *initializing_philo(char **argv);
 
 //aux functions
 long int	ft_atoli(const char *nptr);
+int         ft_isdigit(char c);
 
 #endif
