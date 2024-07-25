@@ -12,3 +12,18 @@
 
 #include "philo.h"
 
+void    arg_error_msg()
+{
+
+}
+
+int is_the_amount_of_args_correct()
+{
+
+}
+
+int are_the_args_only_digits()
+{
+
+} 
+
