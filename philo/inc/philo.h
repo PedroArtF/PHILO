@@ -35,7 +35,7 @@ typedef struct s_philo_data
 typedef struct s_philo
 {
     t_philo_data        *data;
-    pthread_t           philo;
+    pthread_t           philosopher;
     int                 id;
     pthread_mutex_t     *right_fork;
     pthread_mutex_t     philo_fork;
@@ -55,4 +55,7 @@ int             ft_isdigit(char c);
 void	        ft_putstr_fd(const char *string, int fd);
 int	            ft_strlen(const char *string);
 
+//simulation functions
+
+void            start_simulation(t_philo *philo);
 #endif

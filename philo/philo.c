@@ -18,8 +18,8 @@ int main(int argc, char **argv)
 
     if (args_validation(argc, argv))
         return (EXIT_FAILURE);
-    philo = initializing_philo(argv);
-    printf("%ld e %ld\n", philo->data->number_of_philosophers, philo->data->time_to_sleep);
-    //(void)philo;
+    if (!(philo = initializing_philo(argv)))
+        return (EXIT_FAILURE);
+    start_simulation(philo);
     return (EXIT_SUCCESS);
 }

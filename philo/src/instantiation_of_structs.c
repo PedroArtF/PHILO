@@ -46,7 +46,8 @@ t_philo    *initializing_philo(char **argv)
     memset(philo, '\0', (sizeof(philo) * (data->number_of_philosophers + 1)));
     while (i < data->number_of_philosophers)
     {
-        philo->data = data;
+        philo[i].data = data;
+        philo[i].id = i;
         i++;
     }
     return (philo);
