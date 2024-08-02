@@ -63,6 +63,7 @@ int				ft_isdigit(char c);
 void			ft_putstr_fd(const char *string, int fd);
 int				ft_strlen(const char *string);
 char	        *ft_litoa(long int num);
+char	        *format_string(const char *s, const char *s1);
 
 //simulation functions
 

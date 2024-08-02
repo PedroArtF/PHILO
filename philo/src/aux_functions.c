@@ -95,3 +95,22 @@ char	*ft_litoa(long int num)
 	return (string);
 }
 
+char	*format_string(const char *s, const char *s1)
+{
+	int		lenght;
+	int		index;
+	char	*formatted_string;
+
+	lenght = (ft_strlen(s) + ft_strlen(s1));
+	formatted_string = malloc((lenght + 1) * sizeof(char));
+	formatted_string[lenght] = '\0';
+	lenght = 0;
+	index = 0;
+	while (s[index])
+		formatted_string[lenght++] = s[index++];
+	index = 0;
+	while (s1[index])
+		formatted_string[lenght++] = s1[index++];
+	return (formatted_string);
+}
+

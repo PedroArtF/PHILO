@@ -28,7 +28,6 @@ void	start_simulation(t_philo *philo)
 	while (index_j < philo->data->number_of_philosophers)
 	{
 		pthread_join(philo[index_j].philosopher, NULL);
-		printf("philo %d encerrou\n", philo[index_j].id);
 		index_j++;
 	}
 }

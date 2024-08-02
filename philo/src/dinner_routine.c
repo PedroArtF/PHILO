@@ -14,20 +14,24 @@
 
 void	routine_messages(int id, int type)
 {
+    char    *str_id;
+    char    *msg;
+
+    str_id = ft_litoa(id);
 	if (type == EATING)
     {
-        ft_putstr_fd(ft_litoa(id), 1);
-        ft_putstr_fd(" IS EATING\n", 1);
+        msg = format_string(str_id, " IS EATING\n");
+        ft_putstr_fd(msg, 1);
     }
     if (type == SLEEPING)
     {
-        ft_putstr_fd(ft_litoa(id), 1);
-        ft_putstr_fd(" IS SLEEPING\n", 1);
+        msg = format_string(str_id, " IS SLEEPING\n");
+        ft_putstr_fd(msg, 1);
     }
     if (type == THINKING)
     {
-        ft_putstr_fd(ft_litoa(id), 1);
-        ft_putstr_fd(" IS THINKING\n", 1);
+        msg = format_string(str_id, " IS THINKING\n");
+        ft_putstr_fd(msg, 1);
     }
 }
 
