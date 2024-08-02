@@ -52,3 +52,46 @@ int	ft_strlen(const char *string)
 	return (counter);
 }
 
+static long int	long_int_lenght(long int num)
+{
+	long int	lenght;
+
+	lenght = 0;
+	if (num <= 0)
+		lenght += 1;
+	while (num != 0)
+	{
+		lenght++;
+		num = num / 10;
+	}
+	lenght++;
+	return (lenght);
+}
+
+char	*ft_litoa(long int num)
+{
+	long int	iterator;
+	long int	alloc;
+	char		*string;
+
+	alloc = long_int_lenght(num);
+	iterator = alloc - 1;
+	string = malloc(alloc * sizeof(char));
+	if (!string)
+		return (malloc(0));
+	if (num == 0)
+		string[0] = '0';
+	if (num < 0)
+	{
+		num *= -1;
+		string[0] = '-';
+	}
+	string[iterator] = '\0';
+	while (iterator--, num != 0)
+	{
+		string[iterator] = num % 10 + '0';
+		num = num / 10;
+	}
+	return (string);
+}
+

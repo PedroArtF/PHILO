@@ -25,9 +25,9 @@
 
 enum e_act_philos
 {
-	IS_EATING,
-	IS_SLEEPING,
-	IS_THINKING
+	EATING,
+	SLEEPING,
+	THINKING
 };
 
 
@@ -62,6 +62,7 @@ long int		ft_atoli(const char *nptr);
 int				ft_isdigit(char c);
 void			ft_putstr_fd(const char *string, int fd);
 int				ft_strlen(const char *string);
+char	        *ft_litoa(long int num);
 
 //simulation functions
 
@@ -69,6 +70,6 @@ void			start_simulation(t_philo *philo);
 
 //dinner routine
 
-void	*dinner_routine(void *arg);
+void	        *dinner_routine(void *arg);
 
 #endif
