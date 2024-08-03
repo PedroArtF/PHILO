@@ -38,27 +38,46 @@ void	routine_messages(int id, int type)
 void	eating_function(t_philo *philo)
 {
     routine_messages(philo->id, EATING);
+    usleep(philo->data->time_to_eat);
 }
 
 void	sleeping_function(t_philo *philo)
 {
     routine_messages(philo->id, SLEEPING);
+    usleep(philo->data->time_to_sleep);
 }
 
+void    dinner_manager(t_philo *philo)
+{
+    int number_of_meals;
+
+    number_of_meals = 0;
+    while (number_of_meals < philo->data->number_of_times_each_philosopher_must_eat)
+    {
+        if (number_of_meals % 2 != 0)
+        {
+            if (philo->id % 2 == 0)
+                eating_function(philo);
+            else
+                sleeping_function(philo);   
+        }
+        else
+        {
+            if (philo->id % 2 != 0)
+                eating_function(philo);
+            else
+                sleeping_function(philo); 
+        }
+        number_of_meals++;
+    }
+    
+}
 
 void	*dinner_routine(void *arg)
 {
-	t_philo	*philo;
+    t_philo	*philo;
 
 	philo = (t_philo *) arg;
-    if (philo->id % 2 == 0)
-    {
-        usleep(1000000);
-        sleeping_function(philo);
-    }
-    else
-    {
-        eating_function(philo);
-    }
+	dinner_manager(philo);
 	return (NULL);
 }
