@@ -14,13 +14,13 @@
 
 int	main(int argc, char **argv)
 {
-	t_philo		*philo;
+	t_dinner_manager		*manager;
 
 	if (args_validation(argc, argv))
 		return (EXIT_FAILURE);
-	philo = initializing_philo(argv);
-	if (!philo)
+	manager = initializing_manager(argv);
+	if (!manager)
 		return (EXIT_FAILURE);
-	start_simulation(philo);
+	start_simulation(manager);
 	return (EXIT_SUCCESS);
 }

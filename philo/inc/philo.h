@@ -30,7 +30,6 @@ enum e_act_philos
 	THINKING
 };
 
-
 typedef struct s_philo_data
 {
 	_Atomic long int	number_of_philosophers;
@@ -38,6 +37,7 @@ typedef struct s_philo_data
 	_Atomic long int	time_to_eat;
 	_Atomic long int	time_to_sleep;
 	_Atomic long int	number_of_times_each_philosopher_must_eat;
+	int					simulation_state;
 }	t_philo_data;
 
 typedef struct s_philo
@@ -48,14 +48,26 @@ typedef struct s_philo
 	pthread_mutex_t		*right_fork;
 	pthread_mutex_t		philo_fork;
 	_Atomic long int	last_meal;
+	_Atomic long int	start_time;
 }	t_philo;
+
+typedef struct s_dinner_manager
+{
+	_Atomic long int	start;
+	_Atomic long int	last_time;
+	_Atomic long int	time_now;
+	pthread_mutex_t		simulation_tester;
+	t_philo				*philos;
+	t_philo_data		*data;
+}	t_dinner_manager;
 
 //arg validation
 int				args_validation(int argc, char **argv);
 
 //initializing functions
-t_philo_data	*initializing_philo_data(char **argv);
-t_philo			*initializing_philo(char **argv);
+t_philo_data		*initializing_philo_data(char **argv);
+t_philo				*initializing_philos(char **argv);
+t_dinner_manager	*initializing_manager(char **argv);
 
 //aux functions
 long int		ft_atoli(const char *nptr);
@@ -63,11 +75,11 @@ int				ft_isdigit(char c);
 void			ft_putstr_fd(const char *string, int fd);
 int				ft_strlen(const char *string);
 char	        *ft_litoa(long int num);
-char	        *format_string(const char *s, const char *s1);
+char			*format_string(const char *s, const char *s1, const char *s2, const char *s3);
 
 //simulation functions
 
-void			start_simulation(t_philo *philo);
+void			start_simulation(t_dinner_manager *manager);
 
 //dinner routine
 

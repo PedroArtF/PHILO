@@ -24,12 +24,25 @@ t_philo_data	*initializing_philo_data(char **argv)
 	data->time_to_eat = ft_atoli(argv[3]) * 1e3;
 	data->time_to_sleep = ft_atoli(argv[4]) * 1e3;
 	data->number_of_times_each_philosopher_must_eat = -1;
+	data->simulation_state = FALSE;
 	if (argv[5] != NULL)
 		data->number_of_times_each_philosopher_must_eat = ft_atoli(argv[5]);
 	return (data);
 }
 
-t_philo	*initializing_philo(char **argv)
+void	initializing_right_forks(t_philo *philos, int number_of_philos)
+{
+	int	i;
+
+	i = 0;
+	while (i < number_of_philos)
+	{
+		philos[i].right_fork = &philos[(i + 1) % number_of_philos].philo_fork;
+		i++;
+	}
+}
+
+t_philo	*initializing_philos(char **argv)
 {
 	t_philo			*philo;
 	t_philo_data	*data;
@@ -49,9 +62,26 @@ t_philo	*initializing_philo(char **argv)
 	{
 		philo[i].data = data;
 		philo[i].id = id;
+		pthread_mutex_init(&philo[i].philo_fork, NULL);
         i++;
 		id++;
 	}
 	return (philo);
 }
+
+t_dinner_manager	*initializing_manager(char **argv)
+{
+	t_dinner_manager	*manager;
+
+	manager = (t_dinner_manager *)malloc(sizeof(t_dinner_manager) * 1);
+	manager->philos = initializing_philos(argv);
+	manager->data = manager->philos[0].data;
+	pthread_mutex_init(&manager->simulation_tester, NULL);
+	manager->start = 0;
+	manager->time_now = 0;
+	manager->last_time = 0;
+	manager->data = manager->philos->data;
+	return (manager);
+}
+
 

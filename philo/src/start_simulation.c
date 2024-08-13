@@ -12,22 +12,71 @@
 
 #include "philo.h"
 
-void	start_simulation(t_philo *philo)
-{
-	int				index_p;
-	int				index_j;
 
-	index_j = 0;
-	index_p = 0;
-	while (index_p < philo->data->number_of_philosophers)
+int	checking_simulation_status(t_dinner_manager *manager)
+{
+	int	status;
+
+	status = TRUE;
+	pthread_mutex_lock(&manager->simulation_tester);
+	if (!manager->data->simulation_state)
+		status = FALSE;
+	pthread_mutex_unlock(&manager->simulation_tester);
+	return (status);
+}
+
+void	setting_starting_time(t_dinner_manager *manager)
+{
+	 struct timeval		start;
+	 int				i;
+
+	i = 0;
+    gettimeofday(&start, NULL);
+	manager->start = (start.tv_sec * 1000 + start.tv_usec / 1000);
+	while (i < manager->data->number_of_philosophers) 
 	{
-		pthread_create(&philo[index_p].philosopher,
-			NULL, &dinner_routine, &philo[index_p]);
-		index_p++;
+		manager->philos[i].start_time = manager->start;
+		i++;
 	}
-	while (index_j < philo->data->number_of_philosophers)
+}
+
+void	thread_creator_func(t_philo *philos)
+{
+	int	i;
+
+	i = 0;
+	while (i < philos[0].data->number_of_philosophers)
 	{
-		pthread_join(philo[index_j].philosopher, NULL);
-		index_j++;
+		pthread_create(&philos[i].philosopher,
+		NULL, &dinner_routine, &philos[i]);
+		i++;
+	}
+}
+
+void	thread_join_func(t_philo *philos)
+{
+	int	i;
+
+	i = 0;
+	while (i < philos[0].data->number_of_philosophers)
+	{
+		pthread_join(philos[i].philosopher, NULL);
+		i++;
+	}
+}
+
+void	start_simulation(t_dinner_manager *manager)
+{
+	int	number_of_meals;
+
+	number_of_meals = 0;
+	manager->data->simulation_state = TRUE;
+	setting_starting_time(manager);
+	while (checking_simulation_status(manager))
+	{
+		thread_creator_func(manager->philos);
+		thread_join_func(manager->philos);
+		if (++number_of_meals == manager->data->number_of_times_each_philosopher_must_eat)
+			manager->data->simulation_state = FALSE;
 	}
 }

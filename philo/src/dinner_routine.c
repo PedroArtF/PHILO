@@ -12,38 +12,69 @@
 
 #include "philo.h"
 
-void	routine_messages(int id, int type)
+char    *get_action_time(t_philo *philo, char *time_now)
+{
+    struct              timeval tv;
+    _Atomic long int    time;
+
+    gettimeofday(&tv, NULL);
+    time = (tv.tv_sec * 1000 + tv.tv_usec / 1000) - philo->start_time;
+    time_now = ft_litoa(time);
+    return (time_now);
+}
+
+void    hold_the_first_fork(t_philo *philo)
+{
+    if (philo->id % 2 == 0)
+        pthread_mutex_lock(&philo->philo_fork);
+    else
+        pthread_mutex_lock(philo->right_fork);
+}
+
+void    hold_the_second_fork(t_philo *philo)
+{
+    if (philo->id % 2 == 0)
+        pthread_mutex_lock(philo->right_fork);
+    else
+        pthread_mutex_lock(&philo->philo_fork);
+}
+
+void	routine_messages(t_philo *philo, int type)
 {
     char    *str_id;
     char    *msg;
+    char    *time_now;
 
-    str_id = ft_litoa(id);
+    time_now = 0;
+    str_id = ft_litoa(philo->id);
+    time_now = get_action_time(philo, time_now);
 	if (type == EATING)
     {
-        msg = format_string(str_id, " IS EATING\n");
+        msg = format_string(time_now, " ", str_id, " IS EATING\n");
         ft_putstr_fd(msg, 1);
     }
     if (type == SLEEPING)
     {
-        msg = format_string(str_id, " IS SLEEPING\n");
+        msg = format_string(time_now, " ", str_id, " IS SLEEPING\n");
         ft_putstr_fd(msg, 1);
     }
     if (type == THINKING)
     {
-        msg = format_string(str_id, " IS THINKING\n");
+        msg = format_string(time_now, " ", str_id, " IS THINKING\n");
         ft_putstr_fd(msg, 1);
     }
 }
 
 void	eating_function(t_philo *philo)
 {
-    routine_messages(philo->id, EATING);
+    routine_messages(philo, EATING);
     usleep(philo->data->time_to_eat);
 }
 
 void	sleeping_function(t_philo *philo)
 {
-    routine_messages(philo->id, SLEEPING);
+    routine_messages(philo, SLEEPING);
+    
     usleep(philo->data->time_to_sleep);
 }
 
@@ -52,30 +83,25 @@ void    dinner_manager(t_philo *philo)
     int number_of_meals;
 
     number_of_meals = 0;
-    while (number_of_meals < philo->data->number_of_times_each_philosopher_must_eat)
+    if (number_of_meals % 2 != 0)
     {
-        if (number_of_meals % 2 != 0)
-        {
-            if (philo->id % 2 == 0)
-                eating_function(philo);
-            else
-                sleeping_function(philo);   
-        }
+        if (philo->id % 2 == 0)
+            eating_function(philo);
         else
-        {
-            if (philo->id % 2 != 0)
-                eating_function(philo);
-            else
-                sleeping_function(philo); 
-        }
-        number_of_meals++;
+            sleeping_function(philo);   
     }
-    
+    else
+    {
+        if (philo->id % 2 != 0)
+            eating_function(philo);
+        else
+            sleeping_function(philo);     
+    }    
 }
 
 void	*dinner_routine(void *arg)
 {
-    t_philo	*philo;
+    t_philo    *philo;
 
 	philo = (t_philo *) arg;
 	dinner_manager(philo);
