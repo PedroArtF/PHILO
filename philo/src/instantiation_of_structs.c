@@ -47,10 +47,10 @@ t_philo	*initializing_philos(char **argv)
 	t_philo			*philo;
 	t_philo_data	*data;
 	int				id;
-    int             i;
+    int				i;
 
 	id = 1;
-    i = 0;
+	i = 0;
 	data = initializing_philo_data(argv);
 	if (!data)
 		return (NULL);
@@ -63,9 +63,10 @@ t_philo	*initializing_philos(char **argv)
 		philo[i].data = data;
 		philo[i].id = id;
 		pthread_mutex_init(&philo[i].philo_fork, NULL);
-        i++;
+		i++;
 		id++;
 	}
+	initializing_right_forks(philo, data->number_of_philosophers);
 	return (philo);
 }
 

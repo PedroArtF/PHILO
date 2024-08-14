@@ -31,7 +31,7 @@ void	setting_starting_time(t_dinner_manager *manager)
 	 int				i;
 
 	i = 0;
-    gettimeofday(&start, NULL);
+	gettimeofday(&start, NULL);
 	manager->start = (start.tv_sec * 1000 + start.tv_usec / 1000);
 	while (i < manager->data->number_of_philosophers) 
 	{
