@@ -62,6 +62,7 @@ t_philo	*initializing_philos(char **argv)
 	{
 		philo[i].data = data;
 		philo[i].id = id;
+		philo[i].last_meal = 0;
 		pthread_mutex_init(&philo[i].philo_fork, NULL);
 		i++;
 		id++;

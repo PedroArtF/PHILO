@@ -23,6 +23,13 @@
 # define TRUE 1
 # define FALSE 0
 
+enum e_times
+{
+	MICROSECONDS,
+	MILLISECONDS,
+	SECONDS
+};
+
 enum e_act_philos
 {
 	EATING,
