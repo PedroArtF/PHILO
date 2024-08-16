@@ -69,7 +69,7 @@ typedef struct s_dinner_manager
 }	t_dinner_manager;
 
 //arg validation
-int				args_validation(int argc, char **argv);
+int					args_validation(int argc, char **argv);
 
 //initializing functions
 t_philo_data		*initializing_philo_data(char **argv);
@@ -77,19 +77,20 @@ t_philo				*initializing_philos(char **argv);
 t_dinner_manager	*initializing_manager(char **argv);
 
 //aux functions
-long int		ft_atoli(const char *nptr);
-int				ft_isdigit(char c);
-void			ft_putstr_fd(const char *string, int fd);
-int				ft_strlen(const char *string);
-char	        *ft_litoa(long int num);
-char			*format_string(const char *s, const char *s1, const char *s2, const char *s3);
+long int			ft_atoli(const char *nptr);
+int					ft_isdigit(char c);
+void				ft_putstr_fd(const char *string, int fd);
+int					ft_strlen(const char *string);
+char				*ft_litoa(long int num);
+char				*format_string(const char *s, const char *s1,
+						const char *s2, const char *s3);
 
 //simulation functions
 
-void			start_simulation(t_dinner_manager *manager);
+void				start_simulation(t_dinner_manager *manager);
 
 //dinner routine
 
-void	        *dinner_routine(void *arg);
+void				*dinner_routine(void *arg);
 
 #endif

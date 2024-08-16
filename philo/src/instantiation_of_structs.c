@@ -47,7 +47,7 @@ t_philo	*initializing_philos(char **argv)
 	t_philo			*philo;
 	t_philo_data	*data;
 	int				id;
-    int				i;
+	int				i;
 
 	id = 1;
 	i = 0;
@@ -85,5 +85,3 @@ t_dinner_manager	*initializing_manager(char **argv)
 	manager->data = manager->philos->data;
 	return (manager);
 }
-
-
