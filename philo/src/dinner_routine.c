@@ -18,8 +18,8 @@ char	*get_action_time_str(t_philo *philo, char *time_now)
 	_Atomic long int	time;
 
 	gettimeofday(&tv, NULL);
-	time = (tv.tv_sec * 1000 + tv.tv_usec / 1000) - philo->start_time;
-	philo->last_meal = time;
+	time = (tv.tv_sec * 1000000 + tv.tv_usec) - philo->start_time;
+	time = time / 1000;
 	time_now = ft_litoa(time);
 	return (time_now);
 }
@@ -31,11 +31,11 @@ long int	get_simulation_time(int type, long int first_time)
 
 	gettimeofday(&tv, NULL);
 	if (type == MILLISECONDS)
-		time = (tv.tv_sec * 1000 + tv.tv_usec / 1000) - first_time;
+		time = (tv.tv_sec * 1000 + tv.tv_usec / 1000) - (first_time / 1000);
 	if (type == MICROSECONDS)
-		time = (tv.tv_sec * 1000000 + tv.tv_usec) - (first_time * 1000);
+		time = (tv.tv_sec * 1000000 + tv.tv_usec) - first_time;
 	if (type == SECONDS)
-		time = (tv.tv_sec + tv.tv_usec / 1000000) - (first_time / 1000);
+		time = (tv.tv_sec + tv.tv_usec / 1000000) - (first_time / 1000000);
 	return (time);
 }
 
@@ -87,9 +87,10 @@ int dinner_validation(_Atomic long int time_now, t_philo *philo)
 
 	if (philo->last_meal > 0)
 	{
-		time_without_eating = time_now - philo->last_meal;
-		if (time_without_eating < philo->data->time_to_die)
+		time_without_eating = time_now;
+		if (time_without_eating > (philo->data->time_to_die * 1000))
 		{
+			printf("philo last meal = %ld time without eating = %ld time to die %ld\n", philo->last_meal, time_without_eating, (philo->data->time_to_die * 1000));
 			philo->data->simulation_state = FALSE;
 			printf("\nPHILO %d IS DIED\n\n", philo->id);
 			return (EXIT_FAILURE);
@@ -106,7 +107,7 @@ void	eating_function(t_philo *philo)
 	_Atomic long int	time_now;
 
 	routine_messages(philo, EATING);
-	time_now = get_simulation_time(MILLISECONDS, 0);
+	time_now = get_simulation_time(MICROSECONDS, 0);
 	philo->last_meal = time_now;
 	usleep(philo->data->time_to_eat);
 }
@@ -122,7 +123,7 @@ int	dinner_manager(t_philo *philo)
 	_Atomic long int	time_now;
 
 	hold_the_first_fork(philo);
-	time_now = get_simulation_time(MILLISECONDS, philo->last_meal);
+	time_now = get_simulation_time(MICROSECONDS, philo->last_meal);
 	if (dinner_validation(time_now, philo))
 	{
 		if (philo->id % 2 == 0)
@@ -132,7 +133,7 @@ int	dinner_manager(t_philo *philo)
 		return (EXIT_FAILURE);
 	}
 	hold_the_second_fork(philo);
-	time_now = get_simulation_time(MILLISECONDS, philo->last_meal);
+	time_now = get_simulation_time(MICROSECONDS, philo->last_meal);
 	if (dinner_validation(time_now, philo))
 	{
 		pthread_mutex_unlock(&philo->philo_fork);
@@ -149,13 +150,9 @@ int	dinner_manager(t_philo *philo)
 void	*dinner_routine(void *arg)
 {
 	t_philo	*philo;
-	int		simulation_status;
 
-	simulation_status = 0;
 	philo = (t_philo *) arg;
 	*philo->data->simulation_state = TRUE;
-	simulation_status = dinner_manager(philo);
-	if (simulation_status)
-		philo->data->simulation_state = FALSE;
+	dinner_manager(philo);
 	return (NULL);
 }

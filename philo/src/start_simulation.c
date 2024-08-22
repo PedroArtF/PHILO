@@ -31,7 +31,7 @@ void	setting_starting_time(t_dinner_manager *manager)
 
 	i = 0;
 	gettimeofday(&start, NULL);
-	manager->start = (start.tv_sec * 1000 + start.tv_usec / 1000);
+	manager->start = (start.tv_sec * 1000000 + start.tv_usec);
 	while (i < manager->data->number_of_philosophers)
 	{
 		manager->philos[i].start_time = manager->start;
@@ -68,10 +68,8 @@ void	thread_join_func(t_philo *philos)
 void	start_simulation(t_dinner_manager *manager)
 {
 	int	number_of_meals;
-	int	simulation_status;
 
 	number_of_meals = 0;
-	simulation_status = 0;
 	*manager->data->simulation_state = TRUE;
 	setting_starting_time(manager);
 	while (checking_simulation_status(manager))
