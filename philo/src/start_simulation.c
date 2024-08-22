@@ -35,6 +35,7 @@ void	setting_starting_time(t_dinner_manager *manager)
 	while (i < manager->data->number_of_philosophers)
 	{
 		manager->philos[i].start_time = manager->start;
+		manager->philos[i].last_meal = manager->start;
 		i++;
 	}
 }
@@ -71,7 +72,7 @@ void	start_simulation(t_dinner_manager *manager)
 
 	number_of_meals = 0;
 	simulation_status = 0;
-	manager->data->simulation_state = TRUE;
+	*manager->data->simulation_state = TRUE;
 	setting_starting_time(manager);
 	while (checking_simulation_status(manager))
 	{

@@ -42,7 +42,7 @@ void	initializing_right_forks(t_philo *philos, int number_of_philos)
 	}
 }
 
-t_philo	*initializing_philos(char **argv)
+t_philo	*initializing_philos(char **argv, int *simulation_state)
 {
 	t_philo			*philo;
 	t_philo_data	*data;
@@ -64,6 +64,7 @@ t_philo	*initializing_philos(char **argv)
 		philo[i].id = id;
 		philo[i].last_meal = 0;
 		pthread_mutex_init(&philo[i].philo_fork, NULL);
+		philo[i].data->simulation_state = simulation_state;
 		i++;
 		id++;
 	}
@@ -76,7 +77,8 @@ t_dinner_manager	*initializing_manager(char **argv)
 	t_dinner_manager	*manager;
 
 	manager = (t_dinner_manager *)malloc(sizeof(t_dinner_manager) * 1);
-	manager->philos = initializing_philos(argv);
+	manager->simulation_state = TRUE;
+	manager->philos = initializing_philos(argv, &manager->simulation_state);
 	manager->data = manager->philos[0].data;
 	pthread_mutex_init(&manager->simulation_tester, NULL);
 	manager->start = 0;

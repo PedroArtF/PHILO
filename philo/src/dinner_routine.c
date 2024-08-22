@@ -90,6 +90,7 @@ int dinner_validation(_Atomic long int time_now, t_philo *philo)
 		time_without_eating = time_now - philo->last_meal;
 		if (time_without_eating < philo->data->time_to_die)
 		{
+			philo->data->simulation_state = FALSE;
 			printf("\nPHILO %d IS DIED\n\n", philo->id);
 			return (EXIT_FAILURE);
 		}
@@ -104,8 +105,9 @@ void	eating_function(t_philo *philo)
 {
 	_Atomic long int	time_now;
 
-	time_now = get_simulation_time(MILLISECONDS, philo->start_time);
 	routine_messages(philo, EATING);
+	time_now = get_simulation_time(MILLISECONDS, 0);
+	philo->last_meal = time_now;
 	usleep(philo->data->time_to_eat);
 }
 
@@ -119,11 +121,24 @@ int	dinner_manager(t_philo *philo)
 {
 	_Atomic long int	time_now;
 
-	time_now = get_simulation_time(MILLISECONDS, philo->start_time);
-	// if (dinner_validation(time_now, philo))
-	// 	return (EXIT_FAILURE);
 	hold_the_first_fork(philo);
+	time_now = get_simulation_time(MILLISECONDS, philo->last_meal);
+	if (dinner_validation(time_now, philo))
+	{
+		if (philo->id % 2 == 0)
+			pthread_mutex_unlock(&philo->philo_fork);
+		else
+			pthread_mutex_unlock(philo->right_fork);
+		return (EXIT_FAILURE);
+	}
 	hold_the_second_fork(philo);
+	time_now = get_simulation_time(MILLISECONDS, philo->last_meal);
+	if (dinner_validation(time_now, philo))
+	{
+		pthread_mutex_unlock(&philo->philo_fork);
+		pthread_mutex_unlock(philo->right_fork);
+		return (EXIT_FAILURE);
+	}
 	eating_function(philo);
 	pthread_mutex_unlock(&philo->philo_fork);
 	pthread_mutex_unlock(philo->right_fork);
@@ -138,7 +153,7 @@ void	*dinner_routine(void *arg)
 
 	simulation_status = 0;
 	philo = (t_philo *) arg;
-	philo->data->simulation_state = TRUE;
+	*philo->data->simulation_state = TRUE;
 	simulation_status = dinner_manager(philo);
 	if (simulation_status)
 		philo->data->simulation_state = FALSE;
