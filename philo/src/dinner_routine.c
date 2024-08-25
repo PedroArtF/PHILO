@@ -68,63 +68,61 @@ void	routine_messages(t_philo *philo, int type)
 	{
 		msg = format_string(time_now, " ", str_id, " IS EATING\n");
 		ft_putstr_fd(msg, 1);
+		usleep(philo->data->time_to_eat);
 	}
 	if (type == SLEEPING)
 	{
 		msg = format_string(time_now, " ", str_id, " IS SLEEPING\n");
 		ft_putstr_fd(msg, 1);
+		usleep(philo->data->time_to_sleep);
 	}
 	if (type == THINKING)
 	{
 		msg = format_string(time_now, " ", str_id, " IS THINKING\n");
 		ft_putstr_fd(msg, 1);
 	}
+	if (type == FIRSTFORK)
+	{
+		msg = format_string(time_now, " ", str_id, " PICKED UP THE FIRST FORK\n");
+		ft_putstr_fd(msg, 1);
+	}
+	if (type == SECONDFORK)
+	{
+		msg = format_string(time_now, " ", str_id, " PICKED UP THE SECOND FORK\n");
+		ft_putstr_fd(msg, 1);
+	}
 }
 
-int dinner_validation(_Atomic long int time_now, t_philo *philo)
+int dinner_validation(t_philo *philo)
 {
 	_Atomic long int	time_without_eating;
 
-	if (philo->last_meal > 0)
+	time_without_eating = get_simulation_time(MICROSECONDS, philo->last_meal);
+	//printf("philo %d last meal = %ld time without eating = %ld time to die %ld\n", philo->id, philo->last_meal, time_without_eating, (philo->data->time_to_die * 1000));
+	if (time_without_eating > (philo->data->time_to_die * 1000))
 	{
-		time_without_eating = time_now;
-		if (time_without_eating > (philo->data->time_to_die * 1000))
-		{
-			printf("philo last meal = %ld time without eating = %ld time to die %ld\n", philo->last_meal, time_without_eating, (philo->data->time_to_die * 1000));
-			philo->data->simulation_state = FALSE;
-			printf("\nPHILO %d IS DIED\n\n", philo->id);
-			return (EXIT_FAILURE);
-		}
-		else
-			return (EXIT_SUCCESS);
+		//printf("philo last meal = %ld time without eating = %ld time to die %ld\n", philo->last_meal, time_without_eating, (philo->data->time_to_die * 1000));
+		pthread_mutex_lock(&philo->dinner_validation);
+		philo->data->simulation_state = FALSE;
+		pthread_mutex_unlock(&philo->dinner_validation);
+		printf("\nPHILO %d IS DIED\n\n", philo->id);
+		return (EXIT_FAILURE);
 	}
-	else
-		return (EXIT_SUCCESS);
+	return (EXIT_SUCCESS);
 }
 
 void	eating_function(t_philo *philo)
 {
-	_Atomic long int	time_now;
-
 	routine_messages(philo, EATING);
-	time_now = get_simulation_time(MICROSECONDS, 0);
-	philo->last_meal = time_now;
-	usleep(philo->data->time_to_eat);
-}
-
-void	sleeping_function(t_philo *philo)
-{
-	routine_messages(philo, SLEEPING);
-	usleep(philo->data->time_to_sleep);
+	philo->last_meal = 	get_simulation_time(MICROSECONDS, 0);
 }
 
 int	dinner_manager(t_philo *philo)
 {
-	_Atomic long int	time_now;
-
 	hold_the_first_fork(philo);
-	time_now = get_simulation_time(MICROSECONDS, philo->last_meal);
-	if (dinner_validation(time_now, philo))
+	routine_messages(philo, FIRSTFORK);
+	//printf("1 - philo id = %d time now = %ld\n", philo->id, (philo->last_meal - philo->start_time));
+	if (dinner_validation(philo))
 	{
 		if (philo->id % 2 == 0)
 			pthread_mutex_unlock(&philo->philo_fork);
@@ -133,8 +131,9 @@ int	dinner_manager(t_philo *philo)
 		return (EXIT_FAILURE);
 	}
 	hold_the_second_fork(philo);
-	time_now = get_simulation_time(MICROSECONDS, philo->last_meal);
-	if (dinner_validation(time_now, philo))
+	routine_messages(philo, SECONDFORK);
+	//printf("2 - philo id = %d time now = %ld\n", philo->id, (philo->last_meal - philo->start_time));
+	if (dinner_validation(philo))
 	{
 		pthread_mutex_unlock(&philo->philo_fork);
 		pthread_mutex_unlock(philo->right_fork);
@@ -143,7 +142,8 @@ int	dinner_manager(t_philo *philo)
 	eating_function(philo);
 	pthread_mutex_unlock(&philo->philo_fork);
 	pthread_mutex_unlock(philo->right_fork);
-	sleeping_function(philo);
+	routine_messages(philo, SLEEPING);
+	routine_messages(philo, THINKING);
 	return (EXIT_SUCCESS);
 }
 
@@ -152,7 +152,6 @@ void	*dinner_routine(void *arg)
 	t_philo	*philo;
 
 	philo = (t_philo *) arg;
-	*philo->data->simulation_state = TRUE;
 	dinner_manager(philo);
 	return (NULL);
 }

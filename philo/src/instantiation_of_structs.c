@@ -42,7 +42,7 @@ void	initializing_right_forks(t_philo *philos, int number_of_philos)
 	}
 }
 
-t_philo	*initializing_philos(char **argv, int *simulation_state)
+t_philo	*initializing_philos(char **argv, _Atomic int *simulation_state)
 {
 	t_philo			*philo;
 	t_philo_data	*data;
@@ -63,6 +63,7 @@ t_philo	*initializing_philos(char **argv, int *simulation_state)
 		philo[i].data = data;
 		philo[i].id = id;
 		philo[i].last_meal = 0;
+		pthread_mutex_init(&philo[i].dinner_validation, NULL);
 		pthread_mutex_init(&philo[i].philo_fork, NULL);
 		philo[i].data->simulation_state = simulation_state;
 		i++;
