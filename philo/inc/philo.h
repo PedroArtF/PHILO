@@ -23,6 +23,13 @@
 # define TRUE 1
 # define FALSE 0
 
+enum e_validations
+{
+	FIRST_VALIDATION,
+	SECOND_VALIDATION,
+	FINAL_VALIDATION
+};
+
 enum e_times
 {
 	MICROSECONDS,
@@ -57,6 +64,7 @@ typedef struct s_philo
 	pthread_mutex_t		*right_fork;
 	pthread_mutex_t		philo_fork;
 	pthread_mutex_t		dinner_validation;
+	int					number_of_meals;
 	_Atomic long int	last_meal;
 	_Atomic long int	start_time;
 }	t_philo;
@@ -66,6 +74,7 @@ typedef struct s_dinner_manager
 	_Atomic long int	start;
 	_Atomic long int	last_time;
 	_Atomic long int	time_now;
+	pthread_t			dinner_supervisor;
 	pthread_mutex_t		simulation_tester;
 	t_philo				*philos;
 	t_philo_data		*data;
@@ -88,6 +97,7 @@ int					ft_strlen(const char *string);
 char				*ft_litoa(long int num);
 char				*format_string(const char *s, const char *s1,
 						const char *s2, const char *s3);
+long int			get_simulation_time(int type, long int first_time);
 
 //simulation functions
 
@@ -96,5 +106,9 @@ void				start_simulation(t_dinner_manager *manager);
 //dinner routine
 
 void				*dinner_routine(void *arg);
+
+// monitoring functions
+
+void				*dinner_monitoring(void *arg);
 
 #endif

@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   instantiation_of_structs.c                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: parthur- <parthur-@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/22 11:42:32 by marvin            #+#    #+#             */
-/*   Updated: 2024/07/22 11:42:32 by marvin           ###   ########.fr       */
+/*   Created: 2024/08/30 20:24:43 by parthur-          #+#    #+#             */
+/*   Updated: 2024/08/30 20:24:43 by parthur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #include "philo.h"
 
@@ -63,6 +64,7 @@ t_philo	*initializing_philos(char **argv, _Atomic int *simulation_state)
 		philo[i].data = data;
 		philo[i].id = id;
 		philo[i].last_meal = 0;
+		philo[i].number_of_meals = 0;
 		pthread_mutex_init(&philo[i].dinner_validation, NULL);
 		pthread_mutex_init(&philo[i].philo_fork, NULL);
 		philo[i].data->simulation_state = simulation_state;

@@ -21,7 +21,7 @@ COMP = Compiling
 
 # debug and normal flags #
 DFLAGS = -Wall -Wextra -Werror -g3 -fsanitize=thread# TO DEBBUG
-CFLAGS = -Wall -Werror -Wextra -g3 -pedantic -flto -MD -MP # FOR DEPENDENCIES
+CFLAGS = -Wall -Werror -Wextra -g3 # FOR DEPENDENCIES
 LFLAGS = -march=native # TO OPTIMIZE FOR SPECIFIC ARCHITECTURE
 FFLAGS =  -lpthread -pthread # FLAGS THAT
 CCPFLAGS := -I./inc/ -DDEBUG
@@ -37,7 +37,7 @@ HEADERS = $(addprefix $(INC)/, philo.h)
 # files mandatory #
 CFILES = philo.c
 CFILES += $(addprefix $(SRC)/, dinner_routine.c instantiation_of_structs.c start_simulation.c \
-				arg_validation.c aux_functions.c)
+				arg_validation.c aux_functions.c monitoring_functions.c)
 
 VAL = valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --log-file=valgrind-out.txt
 VAL_TXT = valgrind-out.txt

@@ -3,26 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   start_simulation.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: parthur- <parthur-@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/22 10:59:03 by marvin            #+#    #+#             */
-/*   Updated: 2024/07/22 10:59:03 by marvin           ###   ########.fr       */
+/*   Created: 2024/08/30 20:29:07 by parthur-          #+#    #+#             */
+/*   Updated: 2024/08/30 20:29:07 by parthur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-int	checking_simulation_status(t_dinner_manager *manager)
-{
-	int	status;
-
-	status = TRUE;
-	pthread_mutex_lock(&manager->simulation_tester);
-	if (!manager->data->simulation_state)
-		status = FALSE;
-	pthread_mutex_unlock(&manager->simulation_tester);
-	return (status);
-}
 
 void	setting_starting_time(t_dinner_manager *manager)
 {
@@ -72,12 +60,8 @@ void	start_simulation(t_dinner_manager *manager)
 	number_of_meals = 0;
 	*manager->data->simulation_state = TRUE;
 	setting_starting_time(manager);
-	while (checking_simulation_status(manager))
-	{
-		thread_creator_func(manager->philos);
-		thread_join_func(manager->philos);
-		if (++number_of_meals == \
-			manager->data->number_of_times_each_philosopher_must_eat)
-			manager->data->simulation_state = FALSE;
-	}
+	thread_creator_func(manager->philos);
+	pthread_create(&manager->dinner_supervisor, NULL, &dinner_monitoring, &manager);
+	thread_join_func(manager->philos);
+	pthread_join(manager->dinner_supervisor, NULL);
 }

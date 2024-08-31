@@ -3,14 +3,28 @@
 /*                                                        :::      ::::::::   */
 /*   dinner_routine.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: parthur- <parthur-@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/22 10:51:00 by marvin            #+#    #+#             */
-/*   Updated: 2024/07/22 10:51:00 by marvin           ###   ########.fr       */
+/*   Created: 2024/08/30 20:24:16 by parthur-          #+#    #+#             */
+/*   Updated: 2024/08/30 20:24:16 by parthur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+int	checking_simulation_philo(t_philo *philo)
+{
+	int	status;
+
+	status = TRUE;
+	pthread_mutex_lock(&philo->dinner_validation);
+	if (!philo->data->simulation_state)
+		status = FALSE;
+	if (philo->number_of_meals == philo->data->number_of_times_each_philosopher_must_eat)
+		status = FALSE;
+	pthread_mutex_unlock(&philo->dinner_validation);
+	return (status);
+}
 
 char	*get_action_time_str(t_philo *philo, char *time_now)
 {
@@ -39,22 +53,6 @@ long int	get_simulation_time(int type, long int first_time)
 	return (time);
 }
 
-void	hold_the_first_fork(t_philo *philo)
-{
-	if (philo->id % 2 == 0)
-		pthread_mutex_lock(&philo->philo_fork);
-	else
-		pthread_mutex_lock(philo->right_fork);
-}
-
-void	hold_the_second_fork(t_philo *philo)
-{
-	if (philo->id % 2 == 0)
-		pthread_mutex_lock(philo->right_fork);
-	else
-		pthread_mutex_lock(&philo->philo_fork);
-}
-
 void	routine_messages(t_philo *philo, int type)
 {
 	char	*str_id;
@@ -80,6 +78,7 @@ void	routine_messages(t_philo *philo, int type)
 	{
 		msg = format_string(time_now, " ", str_id, " IS THINKING\n");
 		ft_putstr_fd(msg, 1);
+		usleep(100);
 	}
 	if (type == FIRSTFORK)
 	{
@@ -93,36 +92,27 @@ void	routine_messages(t_philo *philo, int type)
 	}
 }
 
-int dinner_validation(t_philo *philo)
+void	hold_the_first_fork(t_philo *philo)
 {
-	_Atomic long int	time_without_eating;
-
-	time_without_eating = get_simulation_time(MICROSECONDS, philo->last_meal);
-	//printf("philo %d last meal = %ld time without eating = %ld time to die %ld\n", philo->id, philo->last_meal, time_without_eating, (philo->data->time_to_die * 1000));
-	if (time_without_eating > (philo->data->time_to_die * 1000))
-	{
-		//printf("philo last meal = %ld time without eating = %ld time to die %ld\n", philo->last_meal, time_without_eating, (philo->data->time_to_die * 1000));
-		pthread_mutex_lock(&philo->dinner_validation);
-		philo->data->simulation_state = FALSE;
-		pthread_mutex_unlock(&philo->dinner_validation);
-		printf("\nPHILO %d IS DIED\n\n", philo->id);
-		return (EXIT_FAILURE);
-	}
-	return (EXIT_SUCCESS);
-}
-
-void	eating_function(t_philo *philo)
-{
-	routine_messages(philo, EATING);
-	philo->last_meal = 	get_simulation_time(MICROSECONDS, 0);
-}
-
-int	dinner_manager(t_philo *philo)
-{
-	hold_the_first_fork(philo);
+	if (philo->id % 2 == 0)
+		pthread_mutex_lock(&philo->philo_fork);
+	else
+		pthread_mutex_lock(philo->right_fork);
 	routine_messages(philo, FIRSTFORK);
-	//printf("1 - philo id = %d time now = %ld\n", philo->id, (philo->last_meal - philo->start_time));
-	if (dinner_validation(philo))
+}
+
+void	hold_the_second_fork(t_philo *philo)
+{
+	if (philo->id % 2 == 0)
+		pthread_mutex_lock(philo->right_fork);
+	else
+		pthread_mutex_lock(&philo->philo_fork);
+	routine_messages(philo, SECONDFORK);
+}
+
+int dinner_validation(t_philo *philo, int type)
+{
+	if (type == FIRST_VALIDATION && !philo->data->simulation_state)
 	{
 		if (philo->id % 2 == 0)
 			pthread_mutex_unlock(&philo->philo_fork);
@@ -130,21 +120,42 @@ int	dinner_manager(t_philo *philo)
 			pthread_mutex_unlock(philo->right_fork);
 		return (EXIT_FAILURE);
 	}
-	hold_the_second_fork(philo);
-	routine_messages(philo, SECONDFORK);
-	//printf("2 - philo id = %d time now = %ld\n", philo->id, (philo->last_meal - philo->start_time));
-	if (dinner_validation(philo))
+	else if (type == SECOND_VALIDATION && !philo->data->simulation_state)
 	{
 		pthread_mutex_unlock(&philo->philo_fork);
 		pthread_mutex_unlock(philo->right_fork);
 		return (EXIT_FAILURE);
 	}
-	eating_function(philo);
-	pthread_mutex_unlock(&philo->philo_fork);
-	pthread_mutex_unlock(philo->right_fork);
-	routine_messages(philo, SLEEPING);
-	routine_messages(philo, THINKING);
+	else if (type == FINAL_VALIDATION && !philo->data->simulation_state)
+		return (EXIT_FAILURE);
 	return (EXIT_SUCCESS);
+}
+
+void	eating_function(t_philo *philo)
+{
+	philo->last_meal = get_simulation_time(MICROSECONDS, 0);
+	routine_messages(philo, EATING);
+}
+
+void	dinner_manager(t_philo *philo)
+{
+	while (checking_simulation_philo(philo))
+	{
+		hold_the_first_fork(philo);
+		if (dinner_validation(philo, FIRST_VALIDATION))
+			break;
+		hold_the_second_fork(philo);
+		if (dinner_validation(philo, SECOND_VALIDATION))
+			break;
+		if (dinner_validation(philo, FINAL_VALIDATION))
+			break;
+		eating_function(philo);
+		philo->number_of_meals++;
+		pthread_mutex_unlock(&philo->philo_fork);
+		pthread_mutex_unlock(philo->right_fork);
+		routine_messages(philo, SLEEPING);
+		routine_messages(philo, THINKING);
+	}
 }
 
 void	*dinner_routine(void *arg)
