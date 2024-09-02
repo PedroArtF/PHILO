@@ -90,6 +90,8 @@ void	routine_messages(t_philo *philo, int type)
 		msg = format_string(time_now, " ", str_id, " PICKED UP THE SECOND FORK\n");
 		ft_putstr_fd(msg, 1);
 	}
+	free(time_now);
+	free(str_id);
 }
 
 void	hold_the_first_fork(t_philo *philo)

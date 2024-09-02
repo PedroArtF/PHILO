@@ -53,15 +53,27 @@ void	thread_join_func(t_philo *philos)
 	}
 }
 
+void	mutex_destroyer_function(t_dinner_manager *manager)
+{
+	int	i;
+
+	i = 0;
+	while (i < manager->data->number_of_philosophers)
+	{
+		pthread_mutex_destroy(&manager->philos[i].philo_fork);
+		pthread_mutex_destroy(&manager->philos[i].dinner_validation);
+		i++;
+	}
+	pthread_mutex_destroy(&manager->simulation_tester);
+}
+
 void	start_simulation(t_dinner_manager *manager)
 {
-	int	number_of_meals;
-
-	number_of_meals = 0;
 	*manager->data->simulation_state = TRUE;
 	setting_starting_time(manager);
 	thread_creator_func(manager->philos);
 	pthread_create(&manager->dinner_supervisor, NULL, &dinner_monitoring, &manager);
 	thread_join_func(manager->philos);
 	pthread_join(manager->dinner_supervisor, NULL);
+	mutex_destroyer_function(manager);
 }

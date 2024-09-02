@@ -83,7 +83,7 @@ t_dinner_manager	*initializing_manager(char **argv)
 	manager->simulation_state = TRUE;
 	manager->philos = initializing_philos(argv, &manager->simulation_state);
 	manager->data = manager->philos[0].data;
-	pthread_mutex_init(&manager->simulation_tester, NULL);
+	//pthread_mutex_init(&manager->simulation_tester, NULL);
 	manager->start = 0;
 	manager->time_now = 0;
 	manager->last_time = 0;

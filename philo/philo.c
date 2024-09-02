@@ -12,6 +12,12 @@
 
 #include "philo.h"
 
+void	free_structures(t_dinner_manager *manager)
+{
+	free(manager->philos);
+	free(manager);
+}
+
 int	main(int argc, char **argv)
 {
 	t_dinner_manager		*manager;
@@ -22,5 +28,6 @@ int	main(int argc, char **argv)
 	if (!manager)
 		return (EXIT_FAILURE);
 	start_simulation(manager);
+	free_structures(manager);
 	return (EXIT_SUCCESS);
 }
