@@ -28,6 +28,6 @@ int	main(int argc, char **argv)
 	if (!manager)
 		return (EXIT_FAILURE);
 	start_simulation(manager);
-	free_structures(manager);
+	//free_structures(manager);
 	return (EXIT_SUCCESS);
 }

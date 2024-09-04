@@ -53,7 +53,8 @@ typedef struct s_philo_data
 	_Atomic long int	time_to_eat;
 	_Atomic long int	time_to_sleep;
 	_Atomic long int	number_of_times_each_philosopher_must_eat;
-	_Atomic int			*simulation_state;
+	int					*simulation_state;
+	//pthread_mutex_t		dinner_validation;
 }	t_philo_data;
 
 typedef struct s_philo
@@ -63,7 +64,7 @@ typedef struct s_philo
 	int					id;
 	pthread_mutex_t		*right_fork;
 	pthread_mutex_t		philo_fork;
-	pthread_mutex_t		dinner_validation;
+	pthread_mutex_t		*dinner_validation;
 	int					number_of_meals;
 	_Atomic long int	last_meal;
 	_Atomic long int	start_time;
@@ -75,10 +76,10 @@ typedef struct s_dinner_manager
 	_Atomic long int	last_time;
 	_Atomic long int	time_now;
 	pthread_t			dinner_supervisor;
-	pthread_mutex_t		simulation_tester;
+	pthread_mutex_t		dinner_validation;
 	t_philo				*philos;
 	t_philo_data		*data;
-	_Atomic int			simulation_state;
+	int					simulation_state;
 }	t_dinner_manager;
 
 //arg validation
@@ -86,7 +87,7 @@ int					args_validation(int argc, char **argv);
 
 //initializing functions
 t_philo_data		*initializing_philo_data(char **argv);
-t_philo				*initializing_philos(char **argv, _Atomic int *simulation_state);
+t_philo				*initializing_philos(char **argv, t_dinner_manager *manager);
 t_dinner_manager	*initializing_manager(char **argv);
 
 //aux functions

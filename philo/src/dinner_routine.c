@@ -17,12 +17,12 @@ int	checking_simulation_philo(t_philo *philo)
 	int	status;
 
 	status = TRUE;
-	pthread_mutex_lock(&philo->dinner_validation);
+	pthread_mutex_lock(philo->dinner_validation);
 	if (!philo->data->simulation_state)
 		status = FALSE;
 	if (philo->number_of_meals == philo->data->number_of_times_each_philosopher_must_eat)
 		status = FALSE;
-	pthread_mutex_unlock(&philo->dinner_validation);
+	pthread_mutex_unlock(philo->dinner_validation);
 	return (status);
 }
 
@@ -62,30 +62,30 @@ void	routine_messages(t_philo *philo, int type)
 	str_id = ft_litoa(philo->id);
 	time_now = NULL;
 	time_now = get_action_time_str(philo, time_now);
-	if (type == EATING)
+	if (type == EATING && checking_simulation_philo(philo))
 	{
 		msg = format_string(time_now, " ", str_id, " IS EATING\n");
 		ft_putstr_fd(msg, 1);
 		usleep(philo->data->time_to_eat);
 	}
-	if (type == SLEEPING)
+	if (type == SLEEPING && checking_simulation_philo(philo))
 	{
 		msg = format_string(time_now, " ", str_id, " IS SLEEPING\n");
 		ft_putstr_fd(msg, 1);
 		usleep(philo->data->time_to_sleep);
 	}
-	if (type == THINKING)
+	if (type == THINKING && checking_simulation_philo(philo))
 	{
 		msg = format_string(time_now, " ", str_id, " IS THINKING\n");
 		ft_putstr_fd(msg, 1);
 		usleep(100);
 	}
-	if (type == FIRSTFORK)
+	if (type == FIRSTFORK && checking_simulation_philo(philo))
 	{
 		msg = format_string(time_now, " ", str_id, " PICKED UP THE FIRST FORK\n");
 		ft_putstr_fd(msg, 1);
 	}
-	if (type == SECONDFORK)
+	if (type == SECONDFORK && checking_simulation_philo(philo))
 	{
 		msg = format_string(time_now, " ", str_id, " PICKED UP THE SECOND FORK\n");
 		ft_putstr_fd(msg, 1);
@@ -114,7 +114,7 @@ void	hold_the_second_fork(t_philo *philo)
 
 int dinner_validation(t_philo *philo, int type)
 {
-	if (type == FIRST_VALIDATION && !philo->data->simulation_state)
+	if (type == FIRST_VALIDATION && !checking_simulation_philo(philo))
 	{
 		if (philo->id % 2 == 0)
 			pthread_mutex_unlock(&philo->philo_fork);
@@ -122,13 +122,13 @@ int dinner_validation(t_philo *philo, int type)
 			pthread_mutex_unlock(philo->right_fork);
 		return (EXIT_FAILURE);
 	}
-	else if (type == SECOND_VALIDATION && !philo->data->simulation_state)
+	else if (type == SECOND_VALIDATION && !checking_simulation_philo(philo))
 	{
 		pthread_mutex_unlock(&philo->philo_fork);
 		pthread_mutex_unlock(philo->right_fork);
 		return (EXIT_FAILURE);
 	}
-	else if (type == FINAL_VALIDATION && !philo->data->simulation_state)
+	else if (type == FINAL_VALIDATION && !checking_simulation_philo(philo))
 		return (EXIT_FAILURE);
 	return (EXIT_SUCCESS);
 }
