@@ -53,54 +53,13 @@ long int	get_simulation_time(int type, long int first_time)
 	return (time);
 }
 
-void	routine_messages(t_philo *philo, int type)
-{
-	char	*str_id;
-	char	*msg;
-	char	*time_now;
-
-	str_id = ft_litoa(philo->id);
-	time_now = NULL;
-	time_now = get_action_time_str(philo, time_now);
-	if (type == EATING && checking_simulation_philo(philo))
-	{
-		msg = format_string(time_now, " ", str_id, " IS EATING\n");
-		ft_putstr_fd(msg, 1);
-		usleep(philo->data->time_to_eat);
-	}
-	if (type == SLEEPING && checking_simulation_philo(philo))
-	{
-		msg = format_string(time_now, " ", str_id, " IS SLEEPING\n");
-		ft_putstr_fd(msg, 1);
-		usleep(philo->data->time_to_sleep);
-	}
-	if (type == THINKING && checking_simulation_philo(philo))
-	{
-		msg = format_string(time_now, " ", str_id, " IS THINKING\n");
-		ft_putstr_fd(msg, 1);
-		usleep(100);
-	}
-	if (type == FIRSTFORK && checking_simulation_philo(philo))
-	{
-		msg = format_string(time_now, " ", str_id, " PICKED UP THE FIRST FORK\n");
-		ft_putstr_fd(msg, 1);
-	}
-	if (type == SECONDFORK && checking_simulation_philo(philo))
-	{
-		msg = format_string(time_now, " ", str_id, " PICKED UP THE SECOND FORK\n");
-		ft_putstr_fd(msg, 1);
-	}
-	free(time_now);
-	free(str_id);
-}
-
 void	hold_the_first_fork(t_philo *philo)
 {
 	if (philo->id % 2 == 0)
 		pthread_mutex_lock(&philo->philo_fork);
 	else
 		pthread_mutex_lock(philo->right_fork);
-	routine_messages(philo, FIRSTFORK);
+	fork_messages(philo, FIRSTFORK);
 }
 
 void	hold_the_second_fork(t_philo *philo)
@@ -109,7 +68,7 @@ void	hold_the_second_fork(t_philo *philo)
 		pthread_mutex_lock(philo->right_fork);
 	else
 		pthread_mutex_lock(&philo->philo_fork);
-	routine_messages(philo, SECONDFORK);
+	fork_messages(philo, SECONDFORK);
 }
 
 int dinner_validation(t_philo *philo, int type)

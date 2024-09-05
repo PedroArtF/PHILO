@@ -23,6 +23,18 @@
 # define TRUE 1
 # define FALSE 0
 
+enum e_error
+{
+	NOERROR,
+	EPERM,
+	ESRCH = 3,
+	EAGAIN = 11,
+	ENOMEM = 12,
+	EBUSY = 16,
+	EINVAL = 22,
+	EDEADLK = 36
+};
+
 enum e_validations
 {
 	FIRST_VALIDATION,
@@ -107,9 +119,29 @@ void				start_simulation(t_dinner_manager *manager);
 //dinner routine
 
 void				*dinner_routine(void *arg);
+int					checking_simulation_philo(t_philo *philo);
+
+
+// time functions
+
+char				*get_action_time_str(t_philo *philo, char *time_now);
+long int			get_simulation_time(int type, long int first_time);
 
 // monitoring functions
 
 void				*dinner_monitoring(void *arg);
+
+// rotine messages functions
+
+void				routine_messages(t_philo *philo, int type);
+void   				fork_messages(t_philo *philo, int type);
+
+// error messages functions
+
+void    			error_msg_thread_create(enum e_error type, int id);
+void    			error_msg_mutex(enum e_error type, int id);
+void   				error_msg_mutex_destroy(enum e_error type);
+void   				error_msg_thread_join(enum e_error type, int id);
+
 
 #endif
