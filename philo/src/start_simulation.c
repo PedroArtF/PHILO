@@ -37,7 +37,7 @@ void	thread_creator_func(t_philo *philos)
 	while (i < philos[0].data->number_of_philosophers)
 	{
 		error = pthread_create(&philos[i].philosopher,
-			NULL, &dinner_routine, &philos[i]);
+				NULL, &dinner_routine, &philos[i]);
 		if (error != NOERROR)
 			error_msg_thread_create(error, philos[i].id);
 		i++;
@@ -48,7 +48,7 @@ void	thread_join_func(t_philo *philos)
 {
 	int				i;
 	enum e_error	error;
- 
+
 	i = 0;
 	while (i < philos[0].data->number_of_philosophers)
 	{
@@ -61,23 +61,24 @@ void	thread_join_func(t_philo *philos)
 
 void	free_memory_and_destroy_lock(t_dinner_manager *manager)
 {
-	int 			i;
+	int				i;
 	int				nb_philo;
 	enum e_error	error;
+
 	i = 0;
 	nb_philo = manager->data->number_of_philosophers;
 	while (i < nb_philo)
 	{
-		free(manager->philos[i].data);
 		error = pthread_mutex_destroy(&manager->philos[i].philo_fork);
 		if (error != NOERROR)
 			error_msg_mutex_destroy(error);
-		//free(&manager->philos[i]);
 		i++;
 	}
 	error = pthread_mutex_destroy(&manager->dinner_validation);
-		if (error != NOERROR)
-			error_msg_mutex_destroy(error);
+	if (error != NOERROR)
+		error_msg_mutex_destroy(error);
+	free(manager->data);
+	free(manager->philos);
 	free(manager);
 }
 
@@ -88,12 +89,15 @@ void	start_simulation(t_dinner_manager *manager)
 	*manager->data->simulation_state = TRUE;
 	setting_starting_time(manager);
 	thread_creator_func(manager->philos);
-	error = pthread_create(&manager->dinner_supervisor, NULL, &dinner_monitoring, manager);
+	error = pthread_create(&manager->dinner_supervisor, \
+			NULL, &dinner_monitoring, manager);
 	if (error != NOERROR)
-		error_msg_thread_create(error, (manager->data->number_of_philosophers + 1));
+		error_msg_thread_create(error, \
+			(manager->data->number_of_philosophers + 1));
 	thread_join_func(manager->philos);
 	error = pthread_join(manager->dinner_supervisor, NULL);
 	if (error != NOERROR)
-		error_msg_thread_join(error, (manager->data->number_of_philosophers + 1));
+		error_msg_thread_join(error, \
+			(manager->data->number_of_philosophers + 1));
 	free_memory_and_destroy_lock(manager);
 }

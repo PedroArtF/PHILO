@@ -10,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "philo.h"
 
 t_philo_data	*initializing_philo_data(char **argv)
@@ -20,7 +19,6 @@ t_philo_data	*initializing_philo_data(char **argv)
 	data = (t_philo_data *)malloc(sizeof(t_philo_data) * 1);
 	if (!data)
 		return (NULL);
-	//pthread_mutex_init(&data->dinner_validation, NULL);
 	data->number_of_philosophers = ft_atoli(argv[1]);
 	data->time_to_die = ft_atoli(argv[2]);
 	data->time_to_eat = ft_atoli(argv[3]) * 1e3;
@@ -39,18 +37,33 @@ void	initializing_right_forks(t_philo *philos, int number_of_philos)
 	int	i;
 
 	i = 0;
-	while (i < number_of_philos)
+	while (i < number_of_philos && number_of_philos > 1)
 	{
 		philos[i].right_fork = &philos[(i + 1) % number_of_philos].philo_fork;
 		i++;
 	}
 }
 
+void	assigns_value_to_the_philosopher(t_philo *philo, t_dinner_manager \
+			*manager, t_philo_data *data, int id)
+{
+	enum e_error	error;
+
+	philo->data = data;
+	philo->id = id;
+	philo->last_meal = 0;
+	philo->number_of_meals = 0;
+	philo->dinner_validation = &manager->dinner_validation;
+	error = pthread_mutex_init(&philo->philo_fork, NULL);
+	if (error != NOERROR)
+		error_msg_mutex(error, philo->id);
+	philo->data->simulation_state = &manager->simulation_state;
+}
+
 t_philo	*initializing_philos(char **argv, t_dinner_manager *manager)
 {
 	t_philo			*philo;
 	t_philo_data	*data;
-	enum e_error	error;
 	int				id;
 	int				i;
 
@@ -59,22 +72,14 @@ t_philo	*initializing_philos(char **argv, t_dinner_manager *manager)
 	data = initializing_philo_data(argv);
 	if (!data)
 		return (NULL);
-	philo = (t_philo *)malloc(sizeof(t_philo) * (data->number_of_philosophers + 1));
+	philo = (t_philo *)malloc(sizeof(t_philo) * \
+			(data->number_of_philosophers + 1));
 	if (!philo)
 		return (NULL);
 	memset(philo, '\0', (sizeof(t_philo) * (data->number_of_philosophers + 1)));
 	while (i <= data->number_of_philosophers)
 	{
-		philo[i].data = data;
-		philo[i].id = id;
-		philo[i].last_meal = 0;
-		philo[i].number_of_meals = 0;
-		philo[i].dinner_validation = &manager->dinner_validation;
-		//pthread_mutex_init(&philo[i].dinner_validation, NULL);
-		error = pthread_mutex_init(&philo[i].philo_fork, NULL);
-		if (error != NOERROR)
-			error_msg_mutex(error, philo[i].id);
-		philo[i].data->simulation_state = &manager->simulation_state;
+		assigns_value_to_the_philosopher(&philo[i], manager, data, id);
 		i++;
 		id++;
 	}
@@ -93,12 +98,9 @@ t_dinner_manager	*initializing_manager(char **argv)
 	if (error != NOERROR)
 		error_msg_mutex(error, 201);
 	manager->philos = initializing_philos(argv, manager);
-	//manager->data = manager->philos[0].data;
-	//pthread_mutex_init(&manager->simulation_tester, NULL);
 	manager->start = 0;
 	manager->time_now = 0;
 	manager->last_time = 0;
 	manager->data = manager->philos[0].data;
-	//manager->data = initializing_philo_data(argv);
 	return (manager);
 }
